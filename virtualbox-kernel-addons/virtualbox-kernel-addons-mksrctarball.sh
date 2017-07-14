@@ -10,6 +10,7 @@ set -e
 
 PRGNAM=virtualbox-kernel-addons
 VERSION=$(VBoxControl -V | grep -e '^[0-9].[0-9].[0-9]*r[0-9]*' | cut -d "r" -f 1)
+CWD=$(pwd)
 
 mkdir $PRGNAM
 
