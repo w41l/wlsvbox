@@ -1,0 +1,13 @@
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.iso
+*.vbox-extpack
+*.vdi
+*.img
+*.pdf
+*.dl
+*.run
+MD5SUMS
+/virtualbox-kernel/virtualbox-kernel/*
+/virtualbox-kernel-addons/virtualbox-kernel-addons/*

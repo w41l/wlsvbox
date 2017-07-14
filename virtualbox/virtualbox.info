@@ -1,0 +1,16 @@
+PRGNAM="virtualbox"
+VERSION="5.1.22"
+HOMEPAGE="https://www.virtualbox.org"
+DOWNLOAD="http://download.virtualbox.org/virtualbox/5.1.22/VirtualBox-5.1.22.tar.bz2 \
+          http://download.virtualbox.org/virtualbox/5.1.22/VBoxGuestAdditions_5.1.22.iso \
+          http://download.virtualbox.org/virtualbox/5.1.22/UserManual.pdf \
+          http://download.virtualbox.org/virtualbox/5.1.22/SDKRef.pdf"
+MD5SUM="1e50a1fcf635e2f434b136f23bb60a82 \
+        a92d692da9ec44f1bede2ccda88bca52 \
+        2c7a287a012988d98c646722154a007d \
+        01de4e32f00adeddf2b5bb4a1893f064"
+DOWNLOAD_x86_64=""
+MD5SUM_x86_64=""
+REQUIRES="acpica"
+MAINTAINER="Heinz Wiesinger"
+EMAIL="pprkut@liwjatan.at"
