@@ -13,11 +13,11 @@ VERSION=$(VBoxControl -V | grep -e '^[0-9].[0-9].[0-9]*r[0-9]*' | cut -d "r" -f 
 
 mkdir $PRGNAM
 
-if [ -d /opt/VBoxGuestAdditions-$VERSION/src ]; then
+if [ -d /opt/VBoxGuestAdditions-$VERSION/src/vboxguest-$VERSION ]; then
   echo "--> Copying sourcecode from /opt/VBoxGuestAdditions-$VERSION/src"
-  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxguest-$VERSION $PRGNAM/vboxguest
-  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxsf-$VERSION $PRGNAM/vboxsf
-  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxvideo-$VERSION $PRGNAM/vboxvideo
+  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxguest-$VERSION/vboxguest $PRGNAM/vboxguest
+  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxguest-$VERSION/vboxsf $PRGNAM/vboxsf
+  cp -rf /opt/VBoxGuestAdditions-$VERSION/src/vboxguest-$VERSION/vboxvideo $PRGNAM/vboxvideo
   # Patch the source first
   echo "--> Source is from upstream VBoxGuestAdditions."
   echo "----> Applying patches to fix building with Slackware current."
