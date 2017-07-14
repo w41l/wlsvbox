@@ -16,9 +16,9 @@ VBox Host
 1. virtualbox
 2. virtualbox-kernel
 3. virtualbox-extension-pack
-4. virtualbox-addons (this meant to be installed in guest)
 
 VBox Guest
 ==========
 
-1. virtualbox-kernel-addons
+1. virtualbox-addons
+2. virtualbox-kernel-addons
