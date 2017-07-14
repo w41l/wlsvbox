@@ -10,4 +10,5 @@ VBOX_OSE             := 1
 VBOX_WITH_PAM        =
 
 # do not fail on warning
-VBOX_WITH_WARNINGS_AS_ERRORS :=
+VBOX_WITH_WARNINGS_AS_ERRORS = 
+VBOX_GCC_WERR=$(NO_SUCH_VARIABLE)

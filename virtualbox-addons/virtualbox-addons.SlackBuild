@@ -99,11 +99,12 @@ patch -p1 -i $CWD/006-rdesktop-vrdp-keymap-path.patch
 # Additional patches
 patch -p1 -i $CWD/modify_for_4_8_bo_move.patch
 patch -p1 -i $CWD/007-python2-path.patch
-patch -p1 -i $CWD/008-no-vboxvideo.patch
+# patch -p1 -i $CWD/008-no-vboxvideo.patch
 patch -p1 -i $CWD/009-gcc-7.patch
 patch -p1 -i $CWD/Fix_for_server_1.19.patch
 patch -p1 -i $CWD/010-linux-4.12.patch
 patch -p1 -i $CWD/fix_KMS_support.patch
+patch -p1 -i $CWD/xf86-video-virtualbox-5.1.22-sysmacros.patch
 
 # Remove gcc version check
 sed -i 's/^check_gcc$/#check_gcc/' ./configure
