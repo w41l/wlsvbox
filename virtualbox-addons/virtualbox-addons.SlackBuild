@@ -48,7 +48,7 @@ if ! grep ^vboxadd: /etc/passwd 2>&1 > /dev/null; then
 fi
 
 # kmk doesn't support MAKEFLAGS, so we use JOBS here
-JOBS=${JOBS:-5}
+JOBS=${JOBS:-3}
 
 # set xorg-server version
 XSERVER=$(X -version 2>&1 | grep Server | cut -d " " -f 4 | sed "s/\.//" | cut -d "." -f 1)
