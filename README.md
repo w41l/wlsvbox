@@ -3,7 +3,8 @@ wlsvbox
 
 This repository contains SlackBuild script for building VirtualBox on Slackware.
 
-You will need acpica installed before building. You can find it in SlackBuilds.org.
+You will need acpica installed before building.
+You can find it in <a href="https://slackbuilds.org/result/?search=acpica&sv=" target="_blank">SlackBuilds.org</a>.
 
 
 Build Order
