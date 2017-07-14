@@ -1,0 +1,98 @@
+--- a/vboxguest/r0drv/linux/memobj-r0drv-linux.c.orig	2017-07-14 19:18:29.805598290 +0700
++++ b/vboxguest/r0drv/linux/memobj-r0drv-linux.c	2017-07-14 19:20:17.374593080 +0700
+@@ -902,6 +902,9 @@
+     union
+     {
+         pgd_t       Global;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++        p4d_t       Four;
++#endif
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 11)
+         pud_t       Upper;
+ #endif
+@@ -919,7 +922,23 @@
+         return NULL;
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 11)
++# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++    u.Four  = *p4d_offset(&u.Global, ulAddr);
++    if (RT_UNLIKELY(p4d_none(u.Four)))
++        return NULL;
++    if (p4d_large(u.Four))
++    {
++        pPage = p4d_page(u.Four);
++        AssertReturn(pPage, NULL);
++        pfn   = page_to_pfn(pPage);      /* doing the safe way... */
++        AssertCompile(P4D_SHIFT - PAGE_SHIFT < 31);
++        pfn  += (ulAddr >> PAGE_SHIFT) & ((UINT32_C(1) << (P4D_SHIFT - PAGE_SHIFT)) - 1);
++        return pfn_to_page(pfn);
++    }
++    u.Upper = *pud_offset(&u.Four, ulAddr);
++# else /* < 4.12 */
+     u.Upper = *pud_offset(&u.Global, ulAddr);
++# endif /* < 4.12 */
+     if (RT_UNLIKELY(pud_none(u.Upper)))
+         return NULL;
+ # if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)
+--- a/vboxguest/r0drv/linux/the-linux-kernel.h.orig	2017-07-14 19:21:15.459590266 +0700
++++ b/vboxguest/r0drv/linux/the-linux-kernel.h	2017-07-14 19:22:18.099587232 +0700
+@@ -159,6 +159,11 @@
+ # include <asm/tlbflush.h>
+ #endif
+ 
++/* for set_pages_x() */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++# include <asm/set_memory.h>
++#endif
++
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
+ # include <asm/smap.h>
+ #else
+--- a/vboxsf/r0drv/linux/the-linux-kernel.h.orig	2017-07-14 19:26:09.193576039 +0700
++++ b/vboxsf/r0drv/linux/the-linux-kernel.h	2017-07-14 19:27:12.759572960 +0700
+@@ -159,6 +159,11 @@
+ # include <asm/tlbflush.h>
+ #endif
+ 
++/* for set_pages_x() */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++# include <asm/set_memory.h>
++#endif
++
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
+ # include <asm/smap.h>
+ #else
+--- a/vboxvideo/vbox_ttm.c.orig	2017-07-14 19:23:00.266585190 +0700
++++ b/vboxvideo/vbox_ttm.c	2017-07-14 19:25:05.036579146 +0700
+@@ -275,11 +275,17 @@
+     .ttm_tt_populate = vbox_ttm_tt_populate,
+     .ttm_tt_unpopulate = vbox_ttm_tt_unpopulate,
+     .init_mem_type = vbox_bo_init_mem_type,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++    .eviction_valuable = ttm_bo_eviction_valuable,
++#endif
+     .evict_flags = vbox_bo_evict_flags,
+     .move = vbox_bo_move,
+     .verify_access = vbox_bo_verify_access,
+     .io_mem_reserve = &vbox_ttm_io_mem_reserve,
+     .io_mem_free = &vbox_ttm_io_mem_free,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++    .io_mem_pfn = ttm_bo_default_io_mem_pfn,
++#endif
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0)
+     .lru_tail = &ttm_bo_default_lru_tail,
+     .swap_lru_tail = &ttm_bo_default_swap_lru_tail,
+--- ./vboxvideo/include/the-linux-kernel.h.orig	2017-07-14 19:29:01.439567696 +0700
++++ ./vboxvideo/include/the-linux-kernel.h	2017-07-14 19:37:55.211541842 +0700
+@@ -159,6 +159,11 @@
+ # include <asm/tlbflush.h>
+ #endif
+ 
++/* for set_pages_x() */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++# include <asm/set_memory.h>
++#endif
++
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0)
+ # include <asm/smap.h>
+ #else

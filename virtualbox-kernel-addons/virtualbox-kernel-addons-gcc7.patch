@@ -1,0 +1,20 @@
+--- ./vboxguest/Makefile.orig	2017-07-14 19:59:02.910480438 +0700
++++ ./vboxguest/Makefile	2017-07-14 19:53:17.497497169 +0700
+@@ -100,6 +100,7 @@
+ 	common/math/gcc/divdi3.o \
+ 	common/math/gcc/moddi3.o \
+ 	common/math/gcc/udivdi3.o \
++	common/math/gcc/udivmoddi4.o \
+ 	common/math/gcc/umoddi3.o \
+ 	common/math/gcc/qdivrem.o
+ endif
+--- ./vboxsf/Makefile.orig	2017-07-14 19:59:49.486478182 +0700
++++ ./vboxsf/Makefile	2017-07-14 19:53:17.498497169 +0700
+@@ -38,6 +38,7 @@
+ 	divdi3.o \
+ 	moddi3.o \
+ 	udivdi3.o \
++	udivmoddi4.o \
+ 	umoddi3.o \
+ 	qdivrem.o
+ endif
