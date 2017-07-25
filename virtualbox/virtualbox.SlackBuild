@@ -25,7 +25,7 @@
 
 PRGNAM=virtualbox
 SRCNAM=VirtualBox
-VERSION=${VERSION:-5.1.22}
+VERSION=${VERSION:-5.1.24}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -43,7 +43,7 @@ PKG=$TMP/package-$PRGNAM
 OUTPUT=${OUTPUT:-/tmp}
 
 # kmk doesn't support MAKEFLAGS, so we use JOBS here
-JOBS=${JOBS:-3}
+JOBS=${JOBS:-5}
 
 # Define Variable Names
 gui=""
@@ -130,22 +130,27 @@ MODE="755"
 
 # We don't want an init-script building kernel modules.
 # Use virtualbox-kernel.SlackBuild for this.
+echo "Apply patch: vboxdrv.sh-setup.diff"
 patch -d src/VBox/Installer/linux -i $CWD/vboxdrv.sh-setup.diff
 
 # Fix building against newer versions of gsoap
+echo "Apply patch: virtualbox-gsoap.patch"
 patch -p1 -i $CWD/virtualbox-gsoap.patch
 
 # Fix wrong path to rdesktop-vrdp-keymaps
+echo "Apply patch: 006-rdesktop-vrdp-keymap-path.patch"
 patch -p1 -i $CWD/006-rdesktop-vrdp-keymap-path.patch
 
 # Additional patches
+echo "Apply patch: modify_for_4_8_bo_move.patch"
 patch -p1 -i $CWD/modify_for_4_8_bo_move.patch
+echo "Apply patch: 007-python2-path.patch"
 patch -p1 -i $CWD/007-python2-path.patch
-# patch -p1 -i $CWD/008-no-vboxvideo.patch
-patch -p1 -i $CWD/009-gcc-7.patch
-patch -p1 -i $CWD/xf86-video-virtualbox-5.1.10-xorg119.patch
-patch -p1 -i $CWD/010-linux-4.12.patch
+echo "Apply patch: Fix_for_server_1.19.patch"
+patch -p1 -i $CWD/Fix_for_server_1.19.patch
+echo "Apply patch: fix_KMS_support.patch"
 patch -p1 -i $CWD/fix_KMS_support.patch
+echo "Apply patch: xf86-video-virtualbox-5.1.22-sysmacros.patch"
 patch -p1 -i $CWD/xf86-video-virtualbox-5.1.22-sysmacros.patch
 
 # Remove gcc version check
