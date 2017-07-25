@@ -25,7 +25,8 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=virtualbox-extension-pack
-VERSION=${VERSION:-5.1.22}
+SRCVERSION=${VERSION:-5.1.24-117012}
+VERSION=${VERSION:-5.1.24_117012}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -63,7 +64,7 @@ EXTPACK="Oracle_VM_VirtualBox_Extension_Pack"
 rm -rf $PKG
 mkdir -p $PKG/usr/lib$LIBDIRSUFFIX/virtualbox/ExtensionPacks/$EXTPACK $OUTPUT
 cd $PKG/usr/lib$LIBDIRSUFFIX/virtualbox/ExtensionPacks/$EXTPACK
-tar xvf $CWD/$EXTPACK-$VERSION.vbox-extpack
+tar xvf $CWD/$EXTPACK-$SRCVERSION.vbox-extpack
 
 chown -R root:root .
 find -L . \
@@ -94,4 +95,4 @@ mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}
