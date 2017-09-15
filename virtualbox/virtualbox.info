@@ -1,14 +1,14 @@
 PRGNAM="virtualbox"
-VERSION="5.1.24"
+VERSION="5.1.28"
 HOMEPAGE="https://www.virtualbox.org"
-DOWNLOAD="http://download.virtualbox.org/virtualbox/5.1.24/VirtualBox-5.1.24.tar.bz2 \
-          http://download.virtualbox.org/virtualbox/5.1.24/VBoxGuestAdditions_5.1.24.iso \
-          http://download.virtualbox.org/virtualbox/5.1.24/UserManual.pdf \
-          http://download.virtualbox.org/virtualbox/5.1.24/SDKRef.pdf"
-MD5SUM="2938f2b75f99f35205e033753c3087f3 \
-        d0cdf73be1cc6038e8cf3e66a40226c0 \
-        7d3444531c58115ac1a1bb414849d4b6 \
-        3a6f844ad7a93b17e5e6148487f0e9d6"
+DOWNLOAD="http://download.virtualbox.org/virtualbox/5.1.28/VirtualBox-5.1.28.tar.bz2 \
+          http://download.virtualbox.org/virtualbox/5.1.28/VBoxGuestAdditions_5.1.28.iso \
+          http://download.virtualbox.org/virtualbox/5.1.28/UserManual.pdf \
+          http://download.virtualbox.org/virtualbox/5.1.28/SDKRef.pdf"
+MD5SUM="2e7350d5ac28ba3df4a778d168098ca5 \
+        0cdb1fc2c52ad6aea0dfc3d0123264c9 \
+        7dc1d7f9d63cfa1a0c6a11ad5e221ce3 \
+        8adc9fdc1added56b8b4b6b2f4dbd560"
 DOWNLOAD_x86_64=""
 MD5SUM_x86_64=""
 REQUIRES="acpica"
