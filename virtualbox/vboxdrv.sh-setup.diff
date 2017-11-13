@@ -1,26 +1,14 @@
---- vboxdrv.sh.orig	2017-07-14 13:30:30.237087817 +0700
-+++ vboxdrv.sh	2017-07-14 14:17:17.936141153 +0700
-@@ -51,23 +51,16 @@
- export USERNAME
- export USER=$USERNAME
+--- vboxdrv.sh.orig	2017-10-18 14:12:51.000000000 +0700
++++ vboxdrv.sh	2017-11-13 15:54:39.978382150 +0700
+@@ -34,7 +34,6 @@
  
--if test -n "${INSTALL_DIR}" && test -x "${INSTALL_DIR}/VirtualBox"; then
--    MODULE_SRC="${INSTALL_DIR}/src/vboxhost"
--elif test -x /usr/lib/virtualbox/VirtualBox; then
-+if test -z "${INSTALL_DIR}"; then
-+  if test -x /usr/lib/virtualbox/VirtualBox; then
-     INSTALL_DIR=/usr/lib/virtualbox
--    MODULE_SRC="/usr/share/virtualbox/src/vboxhost"
--elif test -x "${SCRIPT_DIR}/VirtualBox"; then
-+  elif test -x "${SCRIPT_DIR}/VirtualBox"; then
-     # Executing from the build directory
-     INSTALL_DIR="${SCRIPT_DIR}"
--    MODULE_SRC="${INSTALL_DIR}/src"
--else
--    # Silently exit if the package was uninstalled but not purged.
--    # Applies to Debian packages only (but shouldn't hurt elsewhere)
--    exit 0
-+  fi
+ PATH=/sbin:/bin:/usr/sbin:/usr/bin:$PATH
+ DEVICE=/dev/vboxdrv
+-LOG="/var/log/vbox-install.log"
+ MODPROBE=/sbin/modprobe
+ SCRIPTNAME=vboxdrv.sh
+ 
+@@ -67,7 +66,6 @@
  fi
  VIRTUALBOX="${INSTALL_DIR}/VirtualBox"
  VBOXMANAGE="${INSTALL_DIR}/VBoxManage"
@@ -28,16 +16,56 @@
  if test -u "${VIRTUALBOX}"; then
      GROUP=root
      DEVICE_MODE=0600
-@@ -387,35 +380,7 @@
- # setup_script
- setup()
- {
+@@ -283,8 +281,6 @@
+         mkdir -p -m 0750 /dev/vboxusb 2>/dev/null
+         chown root:vboxusers /dev/vboxusb 2>/dev/null
+     fi
+-    # Remove any kernel modules left over from previously installed kernels.
+-    cleanup only_old
+     succ_msg "VirtualBox services started"
+ }
+ 
+@@ -365,68 +361,6 @@
+     fi
+ }
+ 
+-cleanup()
+-{
+-    # If this is set, only remove kernel modules for no longer installed
+-    # kernels.  Note that only generated kernel modules should be placed
+-    # in /lib/modules/*/misc.  Anything that we should not remove automatically
+-    # should go elsewhere.
+-    only_old="${1}"
+-    for i in /lib/modules/*; do
+-        # Check whether we are only cleaning up for uninstalled kernels.
+-        test -n "${only_old}" && test -e "${i}/kernel/drivers" && continue
+-        # We could just do "rm -f", but we only want to try deleting folders if
+-        # we are sure they were ours, i.e. they had our modules in beforehand.
+-        if    test -e "${i}/misc/vboxdrv.ko" \
+-           || test -e "${i}/misc/vboxnetadp.ko" \
+-           || test -e "${i}/misc/vboxnetflt.ko" \
+-           || test -e "${i}/misc/vboxpci.ko"; then
+-            rm -f "${i}/misc/vboxdrv.ko" "${i}/misc/vboxnetadp.ko" \
+-                  "${i}/misc/vboxnetflt.ko" "${i}/misc/vboxpci.ko"
+-            # Remove the kernel version folder if it was empty except for us.
+-            test   "`echo ${i}/misc/* ${i}/misc/.?* ${i}/* ${i}/.?*`" \
+-                 = "${i}/misc/* ${i}/misc/.. ${i}/misc ${i}/.." &&
+-                rmdir "${i}/misc" "${i}"  # We used to leave empty folders.
+-            version=`expr "${i}" : "/lib/modules/\(.*\)"`
+-            depmod -a "${version}"
+-        fi
+-    done
+-}
+-
+-# setup_script
+-setup()
+-{
 -    begin_msg "Building VirtualBox kernel modules" console
 -    if ! $BUILDINTMP \
 -        --save-module-symvers /tmp/vboxdrv-Module.symvers \
 -        --module-source "$MODULE_SRC/vboxdrv" \
 -        --no-print-directory install >> $LOG 2>&1; then
--        "${INSTALL_DIR}/check_module_dependencies.sh"
+-        "${INSTALL_DIR}/check_module_dependencies.sh" || exit 1
 -        failure "Look at $LOG to find out what went wrong"
 -    fi
 -    if ! $BUILDINTMP \
@@ -61,7 +89,30 @@
 -    rm -f /etc/vbox/module_not_compiled
 -    depmod -a
 -    succ_msg "VirtualBox kernel modules built"
-+    echo "Not implemented! Please use the virtualbox-kernel.SlackBuild available at SlackBuilds.org instead."
- }
- 
+-}
+-
  dmnstatus()
+ {
+     if running vboxdrv; then
+@@ -473,21 +407,6 @@
+ restart)
+     stop && start
+     ;;
+-setup)
+-    # Create udev rule and USB device nodes.
+-    ## todo Wouldn't it make more sense to install the rule to /lib/udev?  This
+-    ## is not a user-created configuration file after all.
+-    ## todo Do we need a udev rule to create /dev/vboxdrv[u] at all?  We have
+-    ## working fall-back code here anyway, and the "right" code is more complex
+-    ## than the fall-back.  Unnecessary duplication?
+-    stop && cleanup
+-    setup_usb "$GROUP" "$DEVICE_MODE" "$INSTALL_DIR"
+-    setup && start
+-    ;;
+-cleanup)
+-    stop && cleanup
+-    cleanup_usb
+-    ;;
+ force-reload)
+     stop
+     start
