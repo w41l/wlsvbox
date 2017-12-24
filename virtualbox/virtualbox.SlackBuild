@@ -25,7 +25,7 @@
 
 PRGNAM=virtualbox
 SRCNAM=VirtualBox
-VERSION=${VERSION:-5.2.0}
+VERSION=${VERSION:-5.2.4}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -131,19 +131,19 @@ MODE="755"
 # We don't want an init-script building kernel modules.
 # Use virtualbox-kernel.SlackBuild for this.
 echo "Apply patch: vboxdrv.sh-setup.diff"
-patch -d src/VBox/Installer/linux -i $CWD/vboxdrv.sh-setup.diff
+patch -p1 -i $CWD/vboxdrv.sh-slackware.patch || exit 1
 
 # Fix building against newer versions of gsoap
 echo "Apply patch: virtualbox-gsoap.patch"
-patch -p1 -i $CWD/virtualbox-gsoap.patch
+patch -p1 -i $CWD/virtualbox-gsoap.patch || exit 1
 
 # Fix wrong path to rdesktop-vrdp-keymaps
 echo "Apply patch: 006-rdesktop-vrdp-keymap-path.patch"
-patch -p1 -i $CWD/006-rdesktop-vrdp-keymap-path.patch
+patch -p1 -i $CWD/006-rdesktop-vrdp-keymap-path.patch || exit 1
 
 # Additional patches
 echo "Apply patch: 007-python2-path.patch"
-patch -p1 -i $CWD/007-python2-path.patch
+patch -p1 -i $CWD/007-python2-path.patch || exit 1
 
 # Remove gcc version check
 sed -i 's/^check_gcc$/#check_gcc/' ./configure
@@ -166,11 +166,6 @@ cp $CWD/LocalConfig.kmk .
 sed -i "s|LIBDIR|lib$LIBDIRSUFFIX|" ./LocalConfig.kmk
 
 kmk -j ${JOBS} LOCALCFG=./LocalConfig.kmk
-
-# build VBoxFUSE
-# cd src/VBox/ImageMounter/VBoxFUSE
-#   kmk -j ${JOBS}
-# cd -
 
 mkdir -p $PKG/usr/{lib$LIBDIRSUFFIX,share,include}/virtualbox \
   $PKG/usr/{bin,src} \
