@@ -1,6 +1,6 @@
---- a/src/VBox/Installer/linux/vboxdrv.sh	2017-12-24 18:41:06.697972160 +0700
-+++ b/src/VBox/Installer/linux/vboxdrv.sh	2017-12-24 18:48:30.948530525 +0700
-@@ -67,7 +67,6 @@
+--- a/src/VBox/Installer/linux/vboxdrv.sh	2018-12-18 20:00:03.000000000 +0700
++++ b/src/VBox/Installer/linux/vboxdrv.sh	2018-12-20 07:25:13.728524535 +0700
+@@ -77,7 +77,6 @@
  fi
  VIRTUALBOX="${INSTALL_DIR}/VirtualBox"
  VBOXMANAGE="${INSTALL_DIR}/VBoxManage"
@@ -8,7 +8,7 @@
  if test -u "${VIRTUALBOX}"; then
      GROUP=root
      DEVICE_MODE=0600
-@@ -283,8 +282,6 @@
+@@ -307,8 +306,6 @@
          mkdir -p -m 0750 /dev/vboxusb 2>/dev/null
          chown root:vboxusers /dev/vboxusb 2>/dev/null
      fi
@@ -17,10 +17,12 @@
      succ_msg "VirtualBox services started"
  }
  
-@@ -367,64 +364,15 @@
+@@ -389,82 +386,6 @@
+     fi
+ }
  
- cleanup()
- {
+-cleanup()
+-{
 -    # If this is set, only remove kernel modules for no longer installed
 -    # kernels.  Note that only generated kernel modules should be placed
 -    # in /lib/modules/*/misc.  Anything that we should not remove automatically
@@ -39,50 +41,85 @@
 -                  "${i}/misc/vboxnetflt.ko" "${i}/misc/vboxpci.ko"
 -            version=`expr "${i}" : "/lib/modules/\(.*\)"`
 -            depmod -a "${version}"
+-            sync
 -        fi
 -        # Remove the kernel version folder if it was empty except for us.
 -        test   "`echo ${i}/misc/* ${i}/misc/.?* ${i}/* ${i}/.?*`" \
 -             = "${i}/misc/* ${i}/misc/.. ${i}/misc ${i}/.." &&
 -            rmdir "${i}/misc" "${i}"  # We used to leave empty folders.
 -    done
-+    succ_msg "Not implemented"
-+    exit 0
- }
- 
- # setup_script
- setup()
- {
+-}
+-
+-# setup_script
+-setup()
+-{
 -    begin_msg "Building VirtualBox kernel modules" console
--    if ! $BUILDINTMP \
+-    log "Building the main VirtualBox module."
+-    if ! myerr=`$BUILDINTMP \
 -        --save-module-symvers /tmp/vboxdrv-Module.symvers \
 -        --module-source "$MODULE_SRC/vboxdrv" \
--        --no-print-directory install >> $LOG 2>&1; then
+-        --no-print-directory install 2>&1`; then
 -        "${INSTALL_DIR}/check_module_dependencies.sh" || exit 1
+-        log "Error building the module:"
+-        module_build_log "$myerr"
 -        failure "Look at $LOG to find out what went wrong"
 -    fi
--    if ! $BUILDINTMP \
+-    log "Building the net filter module."
+-    if ! myerr=`$BUILDINTMP \
 -        --use-module-symvers /tmp/vboxdrv-Module.symvers \
 -        --module-source "$MODULE_SRC/vboxnetflt" \
--        --no-print-directory install >> $LOG 2>&1; then
+-        --no-print-directory install 2>&1`; then
+-        log "Error building the module:"
+-        module_build_log "$myerr"
 -        failure "Look at $LOG to find out what went wrong"
 -    fi
--    if ! $BUILDINTMP \
+-    log "Building the net adaptor module."
+-    if ! myerr=`$BUILDINTMP \
 -        --use-module-symvers /tmp/vboxdrv-Module.symvers \
 -        --module-source "$MODULE_SRC/vboxnetadp" \
--        --no-print-directory install >> $LOG 2>&1; then
+-        --no-print-directory install 2>&1`; then
+-        log "Error building the module:"
+-        module_build_log "$myerr"
 -        failure "Look at $LOG to find out what went wrong"
 -    fi
--    if ! $BUILDINTMP \
+-    log "Building the PCI pass-through module."
+-    if ! myerr=`$BUILDINTMP \
 -        --use-module-symvers /tmp/vboxdrv-Module.symvers \
 -        --module-source "$MODULE_SRC/vboxpci" \
--        --no-print-directory install >> $LOG 2>&1; then
+-        --no-print-directory install 2>&1`; then
+-        log "Error building the module:"
+-        module_build_log "$myerr"
 -        failure "Look at $LOG to find out what went wrong"
 -    fi
 -    rm -f /etc/vbox/module_not_compiled
 -    depmod -a
+-    sync
 -    succ_msg "VirtualBox kernel modules built"
-+    succ_msg "Not implemented"
-+    exit 0
- }
- 
+-}
+-
  dmnstatus()
+ {
+     if running vboxdrv; then
+@@ -511,22 +432,6 @@
+ restart)
+     stop && start
+     ;;
+-setup)
+-    test -n "${2}" && export KERN_VER="${2}"
+-    # Create udev rule and USB device nodes.
+-    ## todo Wouldn't it make more sense to install the rule to /lib/udev?  This
+-    ## is not a user-created configuration file after all.
+-    ## todo Do we need a udev rule to create /dev/vboxdrv[u] at all?  We have
+-    ## working fall-back code here anyway, and the "right" code is more complex
+-    ## than the fall-back.  Unnecessary duplication?
+-    stop && cleanup
+-    setup_usb "$GROUP" "$DEVICE_MODE" "$INSTALL_DIR"
+-    start
+-    ;;
+-cleanup)
+-    stop && cleanup
+-    cleanup_usb
+-    ;;
+ force-reload)
+     stop
+     start

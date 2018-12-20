@@ -25,9 +25,9 @@
 
 PRGNAM=virtualbox
 SRCNAM=VirtualBox
-VERSION=${VERSION:-5.2.12}
+VERSION=${VERSION:-6.0.0}
 BUILD=${BUILD:-1}
-TAG=${TAG:-_SBo}
+TAG=${TAG:-_wls}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -66,7 +66,7 @@ fi
 
 # Support for the qt frontend
 if [ "${HEADLESS:-no}" = "no" ]; then
-  guiapp="VirtualBox VBoxSDL"
+  guiapp="VirtualBoxVM VBoxSDL"
 else
   gui+=" --build-headless"
   guiapp=""
@@ -310,4 +310,4 @@ if [ "$vboxwebsrv" = "vboxwebsrv" ]; then
 fi
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tlz}

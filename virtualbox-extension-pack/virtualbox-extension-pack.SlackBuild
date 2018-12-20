@@ -25,10 +25,10 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=virtualbox-extension-pack
-SRCVERSION=${VERSION:-5.2.12}
-VERSION=${VERSION:-5.2.12}
+SRCVERSION=${VERSION:-6.0.0}
+VERSION=${VERSION:-6.0.0}
 BUILD=${BUILD:-1}
-TAG=${TAG:-_SBo}
+TAG=${TAG:-_wls}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -95,4 +95,4 @@ mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tlz}
